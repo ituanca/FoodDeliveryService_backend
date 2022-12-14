@@ -2,6 +2,7 @@ package com.example.demo.model.dto;
 
 import com.example.demo.model.Admin;
 import com.example.demo.model.Menu;
+import com.example.demo.model.User;
 import com.example.demo.model.Zone;
 import lombok.*;
 
@@ -21,6 +22,6 @@ public class RestaurantDTO {
 
     private List<String> zones;
 
-    private Admin admin;
+    private User admin;
 
 }

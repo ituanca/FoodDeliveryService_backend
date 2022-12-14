@@ -8,14 +8,12 @@ public class ZoneMapper {
     public ZoneDTO convertZoneToDTO(Zone zone){
         return ZoneDTO.builder()
                 .name(zone.getName())
-                .restaurants(zone.getRestaurants())
                 .build();
     }
 
     public Zone convertDTOtoZone(ZoneDTO zoneDTO){
         return Zone.builder()
                 .name((zoneDTO.getName()))
-                .restaurants(zoneDTO.getRestaurants())
                 .build();
     }
 

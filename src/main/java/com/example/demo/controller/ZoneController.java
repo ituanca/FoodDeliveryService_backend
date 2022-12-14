@@ -32,7 +32,7 @@ public class ZoneController {
     @GetMapping("/{id}")
     public Optional<Zone> findById(@PathVariable Integer id){
         log.info("ZoneController:findById " + " id sent from frontend: " + id);
-        return zoneService.findById(id);
+        return zoneService.findById(String.valueOf(id));
     }
 
     @GetMapping("/search/{name}")

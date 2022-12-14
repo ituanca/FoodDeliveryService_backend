@@ -40,7 +40,7 @@ public class ZoneService {
      * @param id the id which I want the zone that I am looking for to have
      * @return null if the id being sought cannot be found in the database or a Zone object otherwise
      */
-    public Optional<Zone> findById(Integer id){
+    public Optional<Zone> findById(String id){
         Optional<Zone> zone = zoneRepository.findById(id);
         if(zone.isEmpty()){
             log.warn("ZoneService:findById " + " Zone with id " + id + " was not found!");

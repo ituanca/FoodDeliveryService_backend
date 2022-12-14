@@ -2,8 +2,10 @@ package com.example.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
-import javax.persistence.*;
 import java.util.List;
 
 @Getter
@@ -11,35 +13,30 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name = "food")
+@Document("food")
 public class Food {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    Integer id;
+    String id;
 
-    @Column(name="food")
     String food;
 
-    @Column(name="listOfIngredients")
     String listOfIngredients;
 
-    @Column(name="price")
     Double price;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name="idCategory")
+//    @ManyToOne(cascade = CascadeType.MERGE)
+//    @JoinColumn(name="idCategory")
+    @DocumentReference
     private Category category;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name="food_orderDetails",
-            joinColumns = @JoinColumn(name="idFood"),
-            inverseJoinColumns = @JoinColumn(name="idOrderDetails"))
+//    @ManyToMany(cascade = CascadeType.ALL)
+//    @JoinTable(name="food_orderDetails",
+//            joinColumns = @JoinColumn(name="idFood"),
+//            inverseJoinColumns = @JoinColumn(name="idOrderDetails"))
     private List<OrderDetails> orderDetails;
 
-    @ManyToOne
-    @JoinColumn(name="idMenu")
+    @DocumentReference
     private Menu menu;
 
     public Food(String food, String listOfIngredients, Double price, Category category, Menu menu, List<OrderDetails> orderDetails) {

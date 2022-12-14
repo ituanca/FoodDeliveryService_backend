@@ -1,10 +1,9 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.Menu;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
-@Repository
-public interface MenuRepository extends JpaRepository<Menu, Integer> {
-
+public interface MenuRepository extends MongoRepository<Menu, String> {
+    Menu getById(String id);
 }

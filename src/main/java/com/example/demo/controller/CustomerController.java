@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.User;
 import com.example.demo.model.dto.CustomerDTO;
 import com.example.demo.service.CustomerService;
 import com.example.demo.model.Customer;
@@ -27,18 +28,18 @@ public class CustomerController { // when invoked from a browser the method retu
     }
 
     @GetMapping("/index")
-    public List<Customer> findAll(){
+    public List<User> findAll(){
         return customerService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Optional<Customer> findById(@PathVariable Integer id){
+    public Optional<User> findById(@PathVariable Integer id){
         log.info("CustomerController:findById " + " id sent from frontend: " + id);
-        return customerService.findById(id);
+        return Optional.ofNullable(customerService.findById(String.valueOf(id)));
     }
 
     @GetMapping("/search/{username}")
-    public ResponseEntity<Optional<Customer>> findByUsername(@PathVariable String username){
+    public ResponseEntity<User> findByUsername(@PathVariable String username){
         log.info("CustomerController:findByUsername " + " username sent from frontend: " + username);
         return ResponseEntity.status(HttpStatus.OK).body(customerService.findByUsername(username));
     }

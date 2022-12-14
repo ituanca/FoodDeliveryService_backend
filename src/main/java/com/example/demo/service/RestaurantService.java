@@ -2,10 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.model.*;
 import com.example.demo.model.dto.RestaurantDTO;
-import com.example.demo.repository.AdminRepository;
-import com.example.demo.repository.MenuRepository;
-import com.example.demo.repository.RestaurantRepository;
-import com.example.demo.repository.ZoneRepository;
+import com.example.demo.repository.*;
 import com.example.demo.utils.PDFGeneratorMenu;
 import com.example.demo.utils.RestaurantMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -24,14 +21,14 @@ public class RestaurantService {
 
     RestaurantRepository restaurantRepository;
     ZoneRepository zoneRepository;
-    AdminRepository adminRepository;
+    UserRepository userRepository;
     MenuRepository menuRepository;
 
     @Autowired
-    public RestaurantService(RestaurantRepository restaurantRepository, ZoneRepository zoneRepository, AdminRepository adminRepository, MenuRepository menuRepository) {
+    public RestaurantService(RestaurantRepository restaurantRepository, ZoneRepository zoneRepository, UserRepository userRepository, MenuRepository menuRepository) {
         this.restaurantRepository = restaurantRepository;
         this.zoneRepository = zoneRepository;
-        this.adminRepository = adminRepository;
+        this.userRepository = userRepository;
         this.menuRepository = menuRepository;
     }
 
@@ -56,7 +53,7 @@ public class RestaurantService {
      * @return either an object of the Restaurant class, or null in case the restaurant with the specified id
      * does not exist in the database
      */
-    public Optional<Restaurant> findById(Integer id){
+    public Optional<Restaurant> findById(String id){
         Optional<Restaurant> restaurant = restaurantRepository.findById(id);
         if(restaurant.isEmpty()){
             log.warn("RestaurantService:findById " + " Restaurant with id " + id + " was not found!");
@@ -89,7 +86,7 @@ public class RestaurantService {
      * there is not found a restaurant in the database associated to the specified name
      */
     public String findByAdmin(String adminString){
-        Admin admin = adminRepository.findByUsername(adminString).orElse(null);
+        User admin = userRepository.findByUsername(adminString).orElse(null);
         Restaurant restaurant = restaurantRepository.findByAdmin(admin).orElse(null);
         if(restaurant != null){
             log.info("RestaurantService:findByAdmin " + " Restaurant associated to admin " + adminString + " was found!");
@@ -106,11 +103,11 @@ public class RestaurantService {
      * found a menu in the database associated to the specified name
      */
     public String findMenuByAdmin(String adminString){
-        Admin admin = adminRepository.findByUsername(adminString).orElse(null);
+        User admin = userRepository.findByUsername(adminString).orElse(null);
         Restaurant restaurant = restaurantRepository.findByAdmin(admin).orElse(null);
         if(restaurant!=null){
             log.info("RestaurantService:findMenuByAdmin " + " Menu associated to admin " + adminString + " was found!");
-            return Integer.toString(restaurant.getMenu().getId());
+            return restaurant.getMenu().getId();
         }
         log.warn("RestaurantService:findMenuByAdmin " + " Menu associated to admin " + adminString + " not found!");
         return "";
@@ -126,7 +123,7 @@ public class RestaurantService {
         if(restaurant!=null){
             if(restaurant.getMenu() != null){
                 log.info("RestaurantService:findMenuByRestaurant " + " Menu associated to restaurant " + name + " was found!");
-                return Integer.toString(restaurant.getMenu().getId());
+                return restaurant.getMenu().getId();
             }
         }
         log.warn("RestaurantService:findMenuByRestaurant " + " Menu associated to restaurant " + name + " not found!");
@@ -140,7 +137,7 @@ public class RestaurantService {
      * @throws IOException throws an exception in case it appears an error when trying to create the PDF file
      */
     public Boolean generatePdf(String menu) throws IOException {
-        Menu menuObject = menuRepository.getById(Integer.parseInt(menu));
+        Menu menuObject = menuRepository.getById(menu);
 
         PDFGeneratorMenu generatorMenu = new PDFGeneratorMenu();
         generatorMenu.setMenu(menuObject);
@@ -156,22 +153,23 @@ public class RestaurantService {
      */
     public Boolean createRestaurant(RestaurantDTO restaurantDTO) {
 
-        // convert list of string to list of zones
         List <String> deliveryZonesString = new ArrayList<>(restaurantDTO.getZones());
         List <Zone> deliveryZones = new ArrayList<>();
 
         for(String zoneId : deliveryZonesString){
-            Zone zone =  zoneRepository.findById(Integer.parseInt(zoneId)).orElse(null);
+            Zone zone =  zoneRepository.findById(zoneId).orElse(null);
             deliveryZones.add(zone);
         }
 
         Menu menu = new Menu();
+        menuRepository.save(menu);
 
-        Admin admin = Admin.builder().build();
+        User admin = User.builder().build();
         admin.setEmail(restaurantDTO.getAdmin().getEmail());
         admin.setUsername(restaurantDTO.getAdmin().getUsername());
         admin.setPassword(new BCryptPasswordEncoder().encode(restaurantDTO.getAdmin().getPassword()));
-
+        admin.setType("Admin");
+        userRepository.save(admin);
         log.info("RestaurantService:createRestaurant " + " Admin  " + admin.getUsername() + " created!");
 
         Restaurant restaurant = Restaurant.builder()
@@ -182,15 +180,10 @@ public class RestaurantService {
                 .admin(admin)
                 .build();
 
-        for(Zone z : deliveryZones){
-            z.getRestaurants().add(restaurant);
-        }
-
         if(findByName(restaurant.getName()).isPresent()){
             log.warn("RestaurantService:createRestaurant " + " Name " + restaurant.getName() + " already exists!");
             return false;
         }
-
         restaurantRepository.save(restaurant);
         log.info("RestaurantService:createRestaurant " + " Restaurant created!");
         return true;

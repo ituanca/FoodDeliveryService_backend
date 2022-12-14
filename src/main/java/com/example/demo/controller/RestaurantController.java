@@ -34,7 +34,7 @@ public class RestaurantController {
     @GetMapping("/{id}")
     public Optional<Restaurant> findById(@PathVariable Integer id){
         log.info("RestaurantController:findById " + " id sent from frontend: " + id);
-        return restaurantService.findById(id);
+        return restaurantService.findById(String.valueOf(id));
     }
 
     @GetMapping("/findByName/{name}")

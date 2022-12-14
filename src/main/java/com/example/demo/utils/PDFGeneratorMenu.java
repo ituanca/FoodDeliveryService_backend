@@ -29,7 +29,7 @@ public class PDFGeneratorMenu {
         Font fontTitle = FontFactory.getFont(FontFactory.TIMES_ROMAN);
         fontTitle.setSize(20);
 
-        Paragraph paragraph = new Paragraph(menu.getRestaurant().getName() + "\n" + "Menu" + "\n\n", fontTitle);
+        Paragraph paragraph = new Paragraph( "Menu" + "\n\n", fontTitle);
         paragraph.setAlignment(Paragraph.ALIGN_CENTER);
 
         document.add(paragraph);
@@ -53,12 +53,12 @@ public class PDFGeneratorMenu {
         cell.setPhrase(new Phrase("Price", font));
         table.addCell(cell);
 
-        for (Food food : menu.getListOfFood()) {
-            table.addCell(food.getFood());
-            table.addCell(food.getListOfIngredients());
-            table.addCell(food.getCategory().getCategory());
-            table.addCell(food.getPrice().toString());
-        }
+//        for (Food food : menu.getListOfFood()) {
+//            table.addCell(food.getFood());
+//            table.addCell(food.getListOfIngredients());
+//            table.addCell(food.getCategory().getCategory());
+//            table.addCell(food.getPrice().toString());
+//        }
 
         document.add(table);
         document.close();

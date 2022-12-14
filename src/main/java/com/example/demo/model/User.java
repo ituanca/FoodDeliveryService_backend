@@ -1,30 +1,28 @@
 package com.example.demo.model;
 
 import lombok.*;
-
-import javax.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @ToString
-@Entity
-@Table(name = "user")
-public abstract class User {
+@Document("user")
+public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    Integer id;
+    String id;
 
-    @Column(name="email")
     String email;
 
-    @Column(name="username")
     String username;
 
-    @Column(name="password")
     String password;
+
+    String type;
 
     public User(String username, String password) {
         this.username = username;
@@ -35,5 +33,12 @@ public abstract class User {
         this.email = email;
         this.username = username;
         this.password = password;
+    }
+
+    public User( String email, String username, String password, String type) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.type = type;
     }
 }

@@ -48,9 +48,8 @@ public class FoodService {
      * @return a list of Food objects which belong to the specified menu
      */
     public List<Food> findByMenu(String menuString){
-        Integer id = Integer.parseInt(menuString);
         List<Food> allFood = findAll();
-        List<Food> allFoodFromMenu = allFood.stream().filter(f -> f.getMenu().getId().equals(id)).toList();
+        List<Food> allFoodFromMenu = allFood.stream().filter(f -> f.getMenu().getId().equals(menuString)).toList();
         if(allFoodFromMenu.isEmpty()){
             log.warn("FoodService:findByMenu " + " List of all food items from menu " + menuString + " is empty!");
         }else{

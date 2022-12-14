@@ -1,13 +1,8 @@
 package com.example.demo.repository;
 
-import com.example.demo.model.Customer;
 import com.example.demo.model.Food;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.util.List;
-
-@Repository
-public interface FoodRepository extends JpaRepository<Food, Integer> {
+public interface FoodRepository extends MongoRepository<Food, String> {
     Food findByFood(String food);
 }

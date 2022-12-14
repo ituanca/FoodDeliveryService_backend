@@ -6,6 +6,8 @@ import com.example.demo.model.dto.CategoryDTO;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.utils.CategoryMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,6 +17,8 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class CategoryService {
+
+    //Config config = new Config();
 
     private final CategoryRepository categoryRepository;
 

@@ -2,9 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.model.*;
 import com.example.demo.model.dto.OrderDTO;
-import com.example.demo.repository.CustomerRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.RestaurantRepository;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.sendemail.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class OrderService {
     RestaurantRepository restaurantRepository;
 
     @Autowired
-    CustomerRepository customerRepository;
+    UserRepository userRepository;
 
     private String createTextToSend(OrderDTO orderDTO){
         StringBuilder textToSend = new StringBuilder("<h2>Items ordered: </h2>");
@@ -39,10 +39,10 @@ public class OrderService {
 
     public Boolean createOrder(OrderDTO orderDTO) throws MessagingException {
         Restaurant restaurant = restaurantRepository.findByName(orderDTO.getRestaurant()).orElse(null);
-        Customer customer = customerRepository.findByUsername(orderDTO.getCustomer().getUsername()).orElse(null);
+        User customer = userRepository.findByUsername(orderDTO.getCustomer().getUsername()).orElse(null);
 
         if(restaurant != null){
-            Admin admin = restaurant.getAdmin();
+            User admin = restaurant.getAdmin();
             if(admin!=null && customer!=null){
                 EmailService emailService = new EmailService();
                 //String textToBeSent = createTextToSend(orderDTO);

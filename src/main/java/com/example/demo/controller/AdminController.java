@@ -29,9 +29,9 @@ public class AdminController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Admin> findById(@PathVariable Integer id){
+    public Admin findById(@PathVariable Integer id){
         log.info("AdminController:findById " + " id entered: " + id);
-        return adminService.findById(id);
+        return (Admin) adminService.findById(String.valueOf(id));
     }
 
     @GetMapping("/checkIfValid")

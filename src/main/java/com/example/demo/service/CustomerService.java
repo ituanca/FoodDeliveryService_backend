@@ -2,7 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.model.*;
 import com.example.demo.model.dto.CustomerDTO;
-import com.example.demo.repository.CustomerRepository;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.utils.CustomerMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -18,19 +17,19 @@ import java.util.regex.Pattern;
 @Service
 public class CustomerService {
 
-    private final CustomerRepository customerRepository;
+    private final UserRepository userRepository;
 
     @Autowired  // By doing this, we can use customerRepository anywhere within the controller without having to instantiate it.
-    public CustomerService(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
+    public CustomerService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     /**
      * Gets all the customers from the database
      * @return the list of all the customers from the database
      */
-    public List<Customer> findAll(){
-        List<Customer> list = customerRepository.findAll();
+    public List<User> findAll(){
+        List<User> list = userRepository.findAll();
         if(list.isEmpty()){
             log.warn("CustomerService:findAll " + " List of all customers is empty!");
         }else{
@@ -45,12 +44,16 @@ public class CustomerService {
      * @return either an object of Customer class, or null in case the customer with the specified id
      * does not exist in the database
      */
-    public Optional<Customer> findById(Integer id){
-        Optional<Customer> customer = customerRepository.findById(id);
-        if(customer.isEmpty()){
+    public User findById(String id){
+
+        User customer = userRepository.findById(id).orElse(null);
+
+        if(customer==null){
             log.warn("CustomerService:findById " + " Customer with id " + id + " was not found!");
-        }else{
+        }else if(customer.getType().equals("Customer")){
             log.info("CustomerService:findById " + " Customer with id " + id + " was found!");
+        }else{
+            log.warn("CustomerService:findById " + " Customer with id " + id + " was not found!");
         }
         return customer;
     }
@@ -61,12 +64,14 @@ public class CustomerService {
      * @return either an object of Customer class, or null in case the customer with the specified username
      * does not exist in the database
      */
-    public Optional<Customer> findByUsername(String username){
-        Optional<Customer> customer = customerRepository.findByUsername(username);
-        if(customer.isEmpty()){
+    public User findByUsername(String username){
+        User customer = userRepository.findByUsername(username).orElse(null);
+        if(customer==null){
             log.warn("CustomerService:findByUsername " + " Customer with username " + username + " was not found!");
-        }else{
+        }else if(customer.getType().equals("Customer")){
             log.info("CustomerService:findByUsername " + " Customer with username " + username + " was found!");
+        }else{
+            log.warn("CustomerService:findByUsername " + " Customer with username " + username + " was not found!");
         }
         return customer;
     }
@@ -78,11 +83,11 @@ public class CustomerService {
      * is not valid or the fact that the data is valid and the customer was inserted into the database
      */
     public String createAndValidate(CustomerDTO customerDTO){
-        if(customerRepository.findByEmail(customerDTO.getEmail()).isPresent() ){
+        if(userRepository.findByEmail(customerDTO.getEmail()).isPresent() ){
             log.warn("CustomerService:createAndValidate " + " Email " + customerDTO.getEmail() + " already exists!");
             return "email_exists";
         }
-        if(customerRepository.findByUsername(customerDTO.getUsername()).isPresent() ){
+        if(userRepository.findByUsername(customerDTO.getUsername()).isPresent() ){
             log.warn("CustomerService:createAndValidate " + " Username " + customerDTO.getUsername() + " already exists!");
             return  "username_exists";
         }
@@ -98,7 +103,7 @@ public class CustomerService {
         }
 
         log.info("CustomerService:createAndValidate " + " Customer was saved to database!");
-        customerRepository.save(customer);
+        userRepository.save(customer);
         return "ok";
     }
 
@@ -111,7 +116,7 @@ public class CustomerService {
      */
     public String login(String username, String password){
 
-        Customer customer = customerRepository.findByUsername(username).orElse(null);
+        User customer = userRepository.findByUsername(username).orElse(null);
         if (customer==null) {
             log.warn("CustomerService:login " + " Customer with username " + username + " does not exist!");
             return "username_error";
@@ -122,7 +127,6 @@ public class CustomerService {
             log.warn("CustomerService:login " + " Password is incorrect!");
             return "password_error";
         }
-
         log.info("CustomerService:login " + " Customer successfully logged in!");
         return "ok";
     }

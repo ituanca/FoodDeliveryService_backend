@@ -1,53 +1,72 @@
 package com.example.demo.service;
 
 import com.example.demo.model.*;
-import com.example.demo.repository.CustomerRepository;
+import com.example.demo.repository.*;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import javax.mail.Address;
+import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor
 @Configuration
 public class Config {
 
-    private final ZoneService zoneService;
-    private final AdminService adminService;
-    private final CategoryService categoryService;
-    private final CustomerService customerService;
+    private ZoneService zoneService;
+    private AdminService adminService;
+    private CategoryService categoryService;
+    private  CustomerService customerService;
+    private MenuRepository menuRepository;
 
-    public Config(ZoneService zoneService, AdminService adminService, CategoryService categoryService, CustomerService customerService) {
+    @Autowired
+    public Config(ZoneService zoneService, AdminService adminService, CategoryService categoryService, CustomerService customerService, MenuRepository menuRepository) {
         this.zoneService = zoneService;
         this.adminService = adminService;
         this.categoryService = categoryService;
         this.customerService = customerService;
+        this.menuRepository = menuRepository;
+    }
+
+    @Bean
+    CommandLineRunner commandLineRunner(UserRepository userRepository, RestaurantRepository restaurantRepository){
+        return args -> {
+            User admin = new User("admin@yahoo.com", "admin1", new BCryptPasswordEncoder().encode("password123"), "Admin");
+            admin.setType("Admin");
+            userRepository.save(admin);
+
+            List<Zone> zones;
+            zones = zoneService.findAll();
+            List<Zone> zonesToBeAdded = new ArrayList<Zone>();
+            zonesToBeAdded.add(zones.get(0));
+            zonesToBeAdded.add(zones.get(1));
+
+            Menu menu = new Menu();
+            menuRepository.save(menu);
+
+            Restaurant restaurant = new Restaurant("Crinul Alb", "str.Macesilor, nr.56", zonesToBeAdded, menu, admin);
+            restaurantRepository.save(restaurant);
+        };
     }
 
 //    @Bean
-//    CommandLineRunner commandLineRunner(AdminRepository repository){
+//    CommandLineRunner commandLineRunner(UserRepository repository){
 //        return args -> {
-//            List<Zone> zones;
-//            zones = zoneService.findAll();
-//            List<Zone> zonesToBeAdded = new ArrayList<Zone>();
-//            zonesToBeAdded.add(zones.get(0));
-//            zonesToBeAdded.add(zones.get(1));
-//            Address address = new Address("str.Macesilor, nr.56");
-//
-//            Restaurant restaurant1 = new Restaurant("Crinul Alb", address, zonesToBeAdded);
-//            Admin admin1 = new Admin("admin1", "password123", restaurant1);
-//            repository.save(admin1);
-//        };
-//    }
-
-//    @Bean
-//    CommandLineRunner commandLineRunner(CustomerRepository repository){
-//        return args -> {
-//            Customer customer1 = new Customer("ituanca", "password123", "Anca Itu", "ituanca@yahoo.com");
-//            Customer customer2 = new Customer("mihaiStan", "pass12345", "Mihai Stan", "mihaiStan@yahoo.com");
-//            Customer customer3 = new Customer("cristinalorenatanase", "14372813agdr", "Cristina Lorena Tanase", "cristinaLorena@yahoo.com");
-//            Customer customer4 = new Customer("dianaion", "mxuwt1793SRV", "Diana Ion", "iondiana10@yahoo.com");
-//            Customer customer5 = new Customer("denisCristian", "qstq5830dO", "Denis Cristian", "deniscristian@yahoo.com");
+//            User customer1 = new Customer("ituanca", "password123", "Anca Itu", "ituanca@yahoo.com");
+//            User customer2 = new Customer("mihaiStan", "pass12345", "Mihai Stan", "mihaiStan@yahoo.com");
+//            User customer3 = new Customer("cristinalorenatanase", "14372813agdr", "Cristina Lorena Tanase", "cristinaLorena@yahoo.com");
+//            User customer4 = new Customer("dianaion", "mxuwt1793SRV", "Diana Ion", "iondiana10@yahoo.com");
+//            User customer5 = new Customer("denisCristian", "qstq5830dO", "Denis Cristian", "deniscristian@yahoo.com");
+//            customer1.setType("Client");
+//            customer2.setType("Client");
+//            customer3.setType("Client");
+//            customer4.setType("Client");
+//            customer5.setType("Client");
 //            repository.saveAll(List.of(customer1, customer2, customer3, customer4, customer5));
 //        };
 //    }
@@ -98,11 +117,11 @@ public class Config {
 //            Category category13 = new Category("Dessert");
 //            Category category14 = new Category("Drinks");
 //
+//           // mongoTemplate.save(category1);
 //            repository.saveAll(List.of(category1, category2, category4, category5, category6, category7,
 //                    category8, category9, category10, category11, category12, category13, category14));
 //        };
 //    }
-
 
     // encrypt all admins
 //    @Bean

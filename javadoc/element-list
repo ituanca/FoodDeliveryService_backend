@@ -1,8 +1,0 @@
-com.example.demo
-com.example.demo.controller
-com.example.demo.model
-com.example.demo.model.dto
-com.example.demo.repository
-com.example.demo.sendemail
-com.example.demo.service
-com.example.demo.utils

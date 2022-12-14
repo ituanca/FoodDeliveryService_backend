@@ -11,7 +11,6 @@ public class FoodMapper {
                 .listOfIngredients(food.getListOfIngredients())
                 .price(food.getPrice().toString())
                 .category(food.getCategory())
-                .restaurant(food.getMenu().getRestaurant().getName())
                 .build();
     }
 

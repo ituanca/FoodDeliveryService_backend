@@ -15,6 +15,4 @@ public class ZoneDTO {
 
     private String name;
 
-    private List<Restaurant> restaurants;
-
 }
